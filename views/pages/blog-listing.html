@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Browse all articles on BlogSphere. Filter by category and search for specific topics.">
+    <title>Blog Listing — BlogSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../../assets/css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="../../index.html"><i class="bi bi-globe2"></i> BlogSphere</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="blog-listing.html">Blogs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="category.html">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="search-results.html">Search</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="login.html" class="btn btn-ghost">Login</a>
+                    <a href="register.html" class="btn btn-gradient">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PAGE HEADER -->
+    <section class="hero-section" style="padding:120px 0 60px;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <p class="text-caption" style="color:rgba(255,255,255,0.7);"><i
+                            class="bi bi-journal-richtext me-1"></i> All Articles</p>
+                    <h1 class="hero-title" style="font-size:40px;">Explore Our Blog</h1>
+                    <p class="hero-subtitle">Discover thought-provoking articles across multiple categories</p>
+                </div>
+                <div class="col-lg-6">
+                    <div class="search-bar" style="position:relative; z-index:1;">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="blogSearchInput" placeholder="Search articles..." class="form-control">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- MAIN CONTENT -->
+    <section class="section-padding">
+        <div class="container">
+            <!-- Filters -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+                <div class="d-flex gap-2 flex-wrap" id="categoryFilters">
+                    <button class="category-chip active-filter" data-category="all">
+                        <i class="bi bi-grid"></i> All
+                    </button>
+                    <!-- Rendered by JS -->
+                </div>
+                <div class="d-flex gap-2 align-items-center">
+                    <select class="form-select form-control-custom" id="sortSelect" style="width:auto;">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="popular">Most Popular</option>
+                        <option value="liked">Most Liked</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Blog Results Info -->
+            <p class="text-muted-custom mb-4" id="resultsInfo">Showing all published articles</p>
+
+            <!-- Blog Grid -->
+            <div class="row g-4" id="blogGrid">
+                <!-- Rendered by JS -->
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-5" id="blogPagination"></div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="footer-brand"><i class="bi bi-globe2"></i> BlogSphere</div>
+                    <p>A platform for curious minds.</p>
+                    <div class="footer-social">
+                        <a href="#"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#"><i class="bi bi-github"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="../../index.html">Home</a></li>
+                        <li><a href="blog-listing.html">Blogs</a></li>
+                        <li><a href="category.html">Categories</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <h5>Account</h5>
+                    <ul>
+                        <li><a href="login.html">Login</a></li>
+                        <li><a href="register.html">Register</a></li>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 BlogSphere. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toastContainer" style="position:fixed; top:80px; right:20px; z-index:9999; width:360px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../models/UserModel.js"></script>
+    <script src="../../models/BlogModel.js"></script>
+    <script src="../../models/CategoryModel.js"></script>
+    <script src="../../models/CommentModel.js"></script>
+    <script src="../../controllers/MainController.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentCategory = 'all';
+            let currentSort = 'newest';
+            let searchQuery = '';
+
+            // Render category filter buttons
+            const filters = document.getElementById('categoryFilters');
+            const categories = categoryModel.getAll();
+            categories.forEach(c => {
+                const btn = document.createElement('button');
+                btn.className = 'category-chip';
+                btn.dataset.category = c.id;
+                btn.innerHTML = `<i class="bi ${c.icon}" style="color:${c.color}"></i> ${c.name}`;
+                filters.appendChild(btn);
+            });
+
+            // Filter click handlers
+            filters.addEventListener('click', (e) => {
+                const chip = e.target.closest('.category-chip');
+                if (!chip) return;
+                filters.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active-filter'));
+                chip.classList.add('active-filter');
+                currentCategory = chip.dataset.category;
+                renderBlogs();
+            });
+
+            // Sort handler
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                renderBlogs();
+            });
+
+            // Search handler
+            document.getElementById('blogSearchInput').addEventListener('input', (e) => {
+                searchQuery = e.target.value.toLowerCase().trim();
+                renderBlogs();
+            });
+
+            function renderBlogs() {
+                let blogs = blogModel.getPublished();
+
+                // Filter by category
+                if (currentCategory !== 'all') {
+                    blogs = blogs.filter(b => b.categoryId === parseInt(currentCategory));
+                }
+
+                // Filter by search
+                if (searchQuery) {
+                    blogs = blogs.filter(b =>
+                        b.title.toLowerCase().includes(searchQuery) ||
+                        b.excerpt.toLowerCase().includes(searchQuery) ||
+                        b.tags.some(t => t.toLowerCase().includes(searchQuery))
+                    );
+                }
+
+                // Sort
+                switch (currentSort) {
+                    case 'oldest': blogs.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt)); break;
+                    case 'popular': blogs.sort((a, b) => b.views - a.views); break;
+                    case 'liked': blogs.sort((a, b) => b.likes - a.likes); break;
+                    default: blogs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                }
+
+                const grid = document.getElementById('blogGrid');
+                const info = document.getElementById('resultsInfo');
+
+                if (blogs.length === 0) {
+                    grid.innerHTML = `
+            <div class="col-12">
+              <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <h4>No articles found</h4>
+                <p>Try adjusting your search or filter to find what you're looking for.</p>
+              </div>
+            </div>`;
+                    info.textContent = 'No results found';
+                } else {
+                    grid.innerHTML = blogs.map(b => createBlogCard(b)).join('');
+                    info.textContent = `Showing ${blogs.length} article${blogs.length !== 1 ? 's' : ''}`;
+                }
+            }
+
+            renderBlogs();
+        });
+
+        // Active filter style
+        const style = document.createElement('style');
+        style.textContent = `.active-filter { background: var(--clr-gradient) !important; color: #fff !important; border-color: transparent !important; }`;
+        document.head.appendChild(style);
+    </script>
+</body>
+
+</html>

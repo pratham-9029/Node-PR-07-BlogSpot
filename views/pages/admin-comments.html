@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Moderate comments — Admin Panel.">
+    <title>Moderate Comments — Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../../assets/css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-wrapper">
+        <aside class="dashboard-sidebar" style="background:linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);">
+            <div class="sidebar-brand"><i class="bi bi-shield-check me-2"></i>Admin Panel</div>
+            <div class="sidebar-section-title">Overview</div>
+            <nav class="sidebar-nav">
+                <a href="admin-dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            </nav>
+            <div class="sidebar-section-title">Content</div>
+            <nav class="sidebar-nav">
+                <a href="admin-blogs.html" class="nav-link"><i class="bi bi-journal-text"></i> Manage Blogs</a>
+                <a href="admin-categories.html" class="nav-link"><i class="bi bi-folder"></i> Categories</a>
+                <a href="admin-comments.html" class="nav-link active"><i class="bi bi-chat-dots"></i> Comments</a>
+            </nav>
+            <div class="sidebar-section-title">Users</div>
+            <nav class="sidebar-nav">
+                <a href="admin-users.html" class="nav-link"><i class="bi bi-people"></i> Manage Users</a>
+            </nav>
+            <div class="sidebar-section-title">Navigation</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-link"><i class="bi bi-person"></i> User Dashboard</a>
+                <a href="../../index.html" class="nav-link"><i class="bi bi-house"></i> Back to Site</a>
+            </nav>
+        </aside>
+
+        <div class="dashboard-content">
+            <div class="dashboard-topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-ghost d-lg-none" onclick="toggleSidebar()"><i class="bi bi-list"
+                            style="font-size:22px;"></i></button>
+                    <div class="topbar-title">
+                        <h4>Moderate Comments</h4>
+                        <p>Review and manage user comments</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-main">
+                <!-- Stats -->
+                <div class="row g-3 mb-4 fade-in">
+                    <div class="col-auto"><span class="badge-custom badge-published px-3 py-2"><i
+                                class="bi bi-check-circle me-1"></i>Approved: <strong
+                                id="approvedCount">0</strong></span></div>
+                    <div class="col-auto"><span class="badge-custom badge-pending px-3 py-2"><i
+                                class="bi bi-clock me-1"></i>Pending: <strong id="pendingCount">0</strong></span></div>
+                    <div class="col-auto"><span class="badge-custom badge-rejected px-3 py-2"><i
+                                class="bi bi-flag me-1"></i>Flagged: <strong id="flaggedCount">0</strong></span></div>
+                </div>
+
+                <!-- Filter -->
+                <div class="d-flex gap-2 mb-4">
+                    <button class="btn btn-gradient btn-sm" data-filter="all">All</button>
+                    <button class="btn btn-ghost btn-sm" data-filter="approved">Approved</button>
+                    <button class="btn btn-ghost btn-sm" data-filter="pending">Pending</button>
+                    <button class="btn btn-ghost btn-sm" data-filter="flagged">Flagged</button>
+                </div>
+
+                <!-- Comments List -->
+                <div id="commentsList" class="fade-in">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" style="position:fixed; top:80px; right:20px; z-index:9999; width:360px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../models/UserModel.js"></script>
+    <script src="../../models/BlogModel.js"></script>
+    <script src="../../models/CategoryModel.js"></script>
+    <script src="../../models/CommentModel.js"></script>
+    <script src="../../controllers/MainController.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentFilter = 'all';
+
+            document.getElementById('approvedCount').textContent = commentModel.getApproved().length;
+            document.getElementById('pendingCount').textContent = commentModel.getPending().length;
+            document.getElementById('flaggedCount').textContent = commentModel.getFlagged().length;
+
+            function renderComments() {
+                let comments = commentModel.getAll();
+                if (currentFilter !== 'all') comments = comments.filter(c => c.status === currentFilter);
+
+                const list = document.getElementById('commentsList');
+                if (comments.length === 0) {
+                    list.innerHTML = `<div class="empty-state"><i class="bi bi-chat-square-text"></i><h4>No comments</h4><p>No comments match the current filter.</p></div>`;
+                    return;
+                }
+
+                list.innerHTML = comments.map(c => {
+                    const user = userModel.getById(c.userId);
+                    const blog = blogModel.getById(c.blogId);
+                    const statusClass = c.status === 'approved' ? 'badge-published' : c.status === 'pending' ? 'badge-pending' : 'badge-rejected';
+                    const statusIcon = c.status === 'approved' ? 'bi-check-circle' : c.status === 'pending' ? 'bi-clock' : 'bi-flag';
+
+                    return `
+            <div class="card-custom p-4 mb-3">
+              <div class="d-flex gap-3">
+                <img src="${user ? user.avatar : ''}" class="avatar avatar-md" alt="${user ? user.name : 'User'}" style="flex-shrink:0;">
+                <div style="flex:1;">
+                  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                    <div>
+                      <strong class="text-small">${user ? user.name : 'Unknown'}</strong>
+                      <span class="text-muted-custom text-small mx-2">on</span>
+                      <a href="single-blog.html?id=${c.blogId}" class="text-primary-custom text-small">${blog ? truncate(blog.title, 40) : 'Unknown Blog'}</a>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="badge-custom ${statusClass}"><i class="bi ${statusIcon} me-1"></i>${c.status}</span>
+                      <small class="text-muted-custom">${timeAgo(c.createdAt)}</small>
+                    </div>
+                  </div>
+                  <p class="text-small mb-3" style="color:var(--clr-text-secondary); line-height:1.6;">${c.text}</p>
+                  <div class="d-flex gap-2">
+                    ${c.status !== 'approved' ? `<button class="btn btn-ghost btn-sm border" style="color:var(--clr-success);" onclick="approveComment(${c.id})"><i class="bi bi-check-lg me-1"></i>Approve</button>` : ''}
+                    ${c.status === 'approved' ? `<button class="btn btn-ghost btn-sm border" onclick="flagComment(${c.id})"><i class="bi bi-flag me-1"></i>Flag</button>` : ''}
+                    <button class="btn btn-ghost btn-sm border" style="color:var(--clr-error);" onclick="deleteComment(${c.id})"><i class="bi bi-trash me-1"></i>Delete</button>
+                    <span class="ms-auto text-muted-custom text-small"><i class="bi bi-heart me-1"></i>${c.likes} likes</span>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+                }).join('');
+            }
+
+            // Filter
+            document.querySelectorAll('[data-filter]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('[data-filter]').forEach(b => b.className = 'btn btn-ghost btn-sm');
+                    btn.className = 'btn btn-gradient btn-sm';
+                    currentFilter = btn.dataset.filter;
+                    renderComments();
+                });
+            });
+
+            window.approveComment = (id) => { showToast('Comment approved!', 'success'); };
+            window.flagComment = (id) => { showToast('Comment flagged for review', 'warning'); };
+            window.deleteComment = (id) => {
+                if (confirm('Delete this comment?')) showToast('Comment deleted', 'success');
+            };
+
+            renderComments();
+        });
+    </script>
+</body>
+
+</html>

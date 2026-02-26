@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage users — Admin Panel.">
+    <title>Manage Users — Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../../assets/css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="dashboard-wrapper">
+        <aside class="dashboard-sidebar" style="background:linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);">
+            <div class="sidebar-brand"><i class="bi bi-shield-check me-2"></i>Admin Panel</div>
+            <div class="sidebar-section-title">Overview</div>
+            <nav class="sidebar-nav">
+                <a href="admin-dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            </nav>
+            <div class="sidebar-section-title">Content</div>
+            <nav class="sidebar-nav">
+                <a href="admin-blogs.html" class="nav-link"><i class="bi bi-journal-text"></i> Manage Blogs</a>
+                <a href="admin-categories.html" class="nav-link"><i class="bi bi-folder"></i> Categories</a>
+                <a href="admin-comments.html" class="nav-link"><i class="bi bi-chat-dots"></i> Comments</a>
+            </nav>
+            <div class="sidebar-section-title">Users</div>
+            <nav class="sidebar-nav">
+                <a href="admin-users.html" class="nav-link active"><i class="bi bi-people"></i> Manage Users</a>
+            </nav>
+            <div class="sidebar-section-title">Navigation</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-link"><i class="bi bi-person"></i> User Dashboard</a>
+                <a href="../../index.html" class="nav-link"><i class="bi bi-house"></i> Back to Site</a>
+            </nav>
+        </aside>
+
+        <div class="dashboard-content">
+            <div class="dashboard-topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-ghost d-lg-none" onclick="toggleSidebar()"><i class="bi bi-list"
+                            style="font-size:22px;"></i></button>
+                    <div class="topbar-title">
+                        <h4>Manage Users</h4>
+                        <p>View, edit, and manage user accounts</p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <div class="search-bar" style="max-width:250px;">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="userSearch" placeholder="Search users..." class="form-control"
+                            style="padding:8px 16px 8px 40px; font-size:14px;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-main">
+                <!-- Quick Stats -->
+                <div class="row g-3 mb-4 fade-in">
+                    <div class="col-auto"><span class="badge-custom badge-active px-3 py-2"><i
+                                class="bi bi-check-circle me-1"></i>Active: <strong id="activeCount">0</strong></span>
+                    </div>
+                    <div class="col-auto"><span class="badge-custom badge-banned px-3 py-2"><i
+                                class="bi bi-slash-circle me-1"></i>Banned: <strong id="bannedCount">0</strong></span>
+                    </div>
+                    <div class="col-auto"><span class="badge-custom badge-pending px-3 py-2"><i
+                                class="bi bi-shield me-1"></i>Admins: <strong id="adminCount">0</strong></span></div>
+                </div>
+
+                <!-- Filter -->
+                <div class="d-flex gap-2 mb-4">
+                    <button class="btn btn-gradient btn-sm" data-filter="all">All Users</button>
+                    <button class="btn btn-ghost btn-sm" data-filter="active">Active</button>
+                    <button class="btn btn-ghost btn-sm" data-filter="banned">Banned</button>
+                    <button class="btn btn-ghost btn-sm" data-filter="admin">Admins</button>
+                </div>
+
+                <!-- Users Table -->
+                <div class="table-custom fade-in">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Blogs</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userTableBody">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal fade" id="editUserModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-custom">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-person-gear me-2"></i>Edit User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <img src="" id="editUserAvatar" class="avatar avatar-xl mb-2" alt="">
+                        <h6 id="editUserName" class="mb-0"></h6>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Role</label>
+                        <select class="form-select form-control-custom" id="editUserRole">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label-custom">Status</label>
+                        <select class="form-select form-control-custom" id="editUserStatus">
+                            <option value="active">Active</option>
+                            <option value="banned">Banned</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-ghost" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-gradient" id="saveUserEdit">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" style="position:fixed; top:80px; right:20px; z-index:9999; width:360px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../models/UserModel.js"></script>
+    <script src="../../models/BlogModel.js"></script>
+    <script src="../../models/CategoryModel.js"></script>
+    <script src="../../models/CommentModel.js"></script>
+    <script src="../../controllers/MainController.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentFilter = 'all';
+
+            document.getElementById('activeCount').textContent = userModel.getActive().length;
+            document.getElementById('bannedCount').textContent = userModel.getBanned().length;
+            document.getElementById('adminCount').textContent = userModel.getByRole('admin').length;
+
+            function renderUsers() {
+                let users = userModel.getAll();
+                if (currentFilter === 'active') users = users.filter(u => u.status === 'active');
+                else if (currentFilter === 'banned') users = users.filter(u => u.status === 'banned');
+                else if (currentFilter === 'admin') users = users.filter(u => u.role === 'admin');
+
+                const search = document.getElementById('userSearch').value.toLowerCase().trim();
+                if (search) users = users.filter(u => u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
+
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = users.map(u => {
+                    const statusClass = u.status === 'active' ? 'badge-active' : 'badge-banned';
+                    const roleClass = u.role === 'admin' ? 'badge-pending' : 'badge-published';
+                    return `
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-3">
+                  <img src="${u.avatar}" class="avatar avatar-md" alt="${u.name}">
+                  <div>
+                    <h6 class="text-small mb-0">${u.name}</h6>
+                    <small class="text-muted-custom">${u.email}</small>
+                  </div>
+                </div>
+              </td>
+              <td><span class="text-small">@${u.username}</span></td>
+              <td><span class="badge-custom ${roleClass}">${u.role}</span></td>
+              <td><span class="badge-custom ${statusClass}">${u.status}</span></td>
+              <td><span class="text-small">${u.blogCount}</span></td>
+              <td><span class="text-small text-muted-custom">${formatDate(u.joinedDate)}</span></td>
+              <td>
+                <div class="d-flex gap-1">
+                  <button class="btn-icon edit-user-btn" style="width:32px; height:32px;" data-id="${u.id}" title="Edit"><i class="bi bi-pencil"></i></button>
+                  ${u.status === 'active' ?
+                            `<button class="btn-icon" style="width:32px; height:32px;" title="Ban" onclick="banUser(${u.id})"><i class="bi bi-slash-circle" style="color:var(--clr-error);"></i></button>` :
+                            `<button class="btn-icon" style="width:32px; height:32px;" title="Unban" onclick="unbanUser(${u.id})"><i class="bi bi-check-circle" style="color:var(--clr-success);"></i></button>`
+                        }
+                </div>
+              </td>
+            </tr>`;
+                }).join('');
+
+                // Edit handlers
+                tbody.querySelectorAll('.edit-user-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const user = userModel.getById(parseInt(btn.dataset.id));
+                        document.getElementById('editUserAvatar').src = user.avatar;
+                        document.getElementById('editUserName').textContent = user.name;
+                        document.getElementById('editUserRole').value = user.role;
+                        document.getElementById('editUserStatus').value = user.status;
+                        new bootstrap.Modal(document.getElementById('editUserModal')).show();
+                    });
+                });
+            }
+
+            // Filter
+            document.querySelectorAll('[data-filter]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('[data-filter]').forEach(b => b.className = 'btn btn-ghost btn-sm');
+                    btn.className = 'btn btn-gradient btn-sm';
+                    currentFilter = btn.dataset.filter;
+                    renderUsers();
+                });
+            });
+
+            document.getElementById('userSearch').addEventListener('input', renderUsers);
+
+            document.getElementById('saveUserEdit').addEventListener('click', () => {
+                bootstrap.Modal.getInstance(document.getElementById('editUserModal')).hide();
+                showToast('User updated successfully!', 'success');
+            });
+
+            window.banUser = (id) => { if (confirm('Ban this user?')) showToast('User has been banned', 'warning'); };
+            window.unbanUser = (id) => { showToast('User has been unbanned', 'success'); };
+
+            renderUsers();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,114 @@
+
+UC1  → Page 1:  Homepage
+  UC2  → Page 2:  Blog Listing Page (includes UC4 Search + UC5 Filter)
+  UC3  → Page 3:  Single Blog Post Page (includes UC6, UC20, UC21)
+  UC7  → Page 4:  Registration Page
+  UC8  → Page 5:  Login Page
+  UC10 → Page 6:  Email Verification Page
+  UC11 → Page 7:  Forgot Password Page
+  UC11 → Page 8:  Reset Password Page
+  UC12 → Page 9:  User Dashboard (includes UC22)
+  UC13 → Page 10: Create Blog Page (includes UC16, UC17, UC18)
+  UC14 → Page 11: Edit Blog Page (includes UC16, UC17, UC18)
+  —    → Page 12: My Blogs Page (includes UC14, UC15)
+  UC19 → Page 13: User Profile & Settings Page
+  —    → Page 14: Search Results Page (UC4)
+  —    → Page 15: Category Page (UC5)
+  UC23 → Page 16: Admin Dashboard (includes UC30)
+  UC24 → Page 17: Admin Manage Blogs (includes UC25, UC26, UC32)
+  UC27 → Page 18: Admin Manage Users (includes UC28)
+  UC29 → Page 19: Admin Manage Categories
+  UC31 → Page 20: Admin Moderate Comments
+
+therefore , just ignore the UC Numbers.....
+🎨 UNIFIED DESIGN THEME SYSTEM
+
+# Color Palette
+
+┌─────────────────────────────────────────────────────┐
+│                  BRAND COLOR SYSTEM                  │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  PRIMARY GRADIENT:                                  │
+│  ████████████████  #667eea → #764ba2               │
+│  (Purple-Blue to Purple)                           │
+│                                                     │
+│  PRIMARY:          ████  #667eea (Royal Blue)      │
+│  SECONDARY:        ████  #764ba2 (Deep Purple)     │
+│  ACCENT:           ████  #f093fb (Soft Pink)       │
+│                                                     │
+│  SUCCESS:          ████  #2ecc71 (Emerald Green)   │
+│  WARNING:          ████  #f39c12 (Amber)           │
+│  ERROR:            ████  #e74c3c (Crimson Red)     │
+│  INFO:             ████  #3498db (Sky Blue)        │
+│                                                     │
+│  BACKGROUND:       ████  #FEFEFE (Off White)       │
+│  SURFACE:          ████  #F8F9FF (Lavender Mist)   │
+│  CARD BG:          ████  #FFFFFF (Pure White)      │
+│  DARK BG:          ████  #1a1a2e (Midnight Blue)   │
+│                                                     │
+│  TEXT PRIMARY:     ████  #2d3436 (Charcoal)        │
+│  TEXT SECONDARY:   ████  #636e72 (Grey)            │
+│  TEXT MUTED:       ████  #b2bec3 (Light Grey)      │
+│  TEXT ON PRIMARY:  ████  #FFFFFF (White)           │
+│                                                     │
+│  BORDERS:          ████  #dfe6e9 (Soft Grey)       │
+│  HOVER STATE:      ████  #5a6fd6 (Darker Blue)    │
+│  SHADOW:           rgba(102, 126, 234, 0.15)       │
+│                                                     │
+│  ROLE-BASED HIGHLIGHTS:                            │
+│  Visitor:          ████  #E3F2FD (Light Blue)      │
+│  Registered User:  ████  #E8F5E9 (Light Green)    │
+│  Administrator:    ████  #FCE4EC (Light Pink)      │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+# Typography System
+
+┌─────────────────────────────────────────────────────┐
+│                  TYPOGRAPHY                          │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  HEADING FONT:    'Playfair Display', serif         │
+│  BODY FONT:       'Inter', sans-serif              │
+│  CODE FONT:       'Fira Code', monospace           │
+│                                                     │
+│  H1:  36px / Bold / Letter-spacing: -0.5px         │
+│  H2:  30px / Bold / Letter-spacing: -0.3px         │
+│  H3:  24px / SemiBold                              │
+│  H4:  20px / SemiBold                              │
+│  Body: 16px / Regular / Line-height: 1.7           │
+│  Small: 14px / Regular                             │
+│  Caption: 12px / Medium / Uppercase                │
+│                                                     │
+└─────────────────────────────────────────────────────┘
+# Component Design Rules
+
+┌─────────────────────────────────────────────────────┐
+│              COMPONENT STANDARDS                     │
+├─────────────────────────────────────────────────────┤
+│                                                     │
+│  BORDER RADIUS:                                     │
+│  - Buttons:        8px                              │
+│  - Cards:          12px                             │
+│  - Modals:         16px                             │
+│  - Inputs:         8px                              │
+│  - Avatars:        50% (circle)                    │
+│  - Tags/Badges:    20px (pill)                     │
+│                                                     │
+│  SHADOWS:                                           │
+│  - Card:    0 2px 12px rgba(102,126,234,0.1)       │
+│  - Hover:   0 8px 25px rgba(102,126,234,0.18)     │
+│  - Modal:   0 15px 50px rgba(0,0,0,0.2)           │
+│  - Navbar:  0 2px 10px rgba(0,0,0,0.08)           │
+│                                                     │
+│  SPACING:                                           │
+│  - Base unit: 8px                                   │
+│  - Section padding: 80px vertical                   │
+│  - Card padding: 24px                               │
+│  - Container max-width: 1200px                      │
+│                                                     │
+│  TRANSITIONS:                                       │
+│  - All: 0.3s ease                                   │
+│  - Hover scale: 1.02                                │
+│                                                     │
+└─────────────────────────────────────────────────────┘

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create a new blog post on BlogSphere.">
+    <title>Create Blog — BlogSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../../assets/css/styles.css" rel="stylesheet">
+    <style>
+        .image-upload-area {
+            border: 2px dashed var(--clr-border);
+            border-radius: var(--radius-card);
+            padding: 48px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--clr-surface);
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--clr-primary);
+            background: rgba(102, 126, 234, 0.04);
+        }
+
+        .image-upload-area.dragging {
+            border-color: var(--clr-primary);
+            background: rgba(102, 126, 234, 0.08);
+        }
+
+        .tag-input-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 2px solid var(--clr-border);
+            border-radius: var(--radius-input);
+            background: var(--clr-card);
+            min-height: 48px;
+            align-items: center;
+        }
+
+        .tag-input-wrapper:focus-within {
+            border-color: var(--clr-primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+        }
+
+        .tag-input-wrapper input {
+            border: none;
+            outline: none;
+            flex: 1;
+            min-width: 120px;
+            font-family: var(--font-body);
+            font-size: 15px;
+        }
+
+        .tag-badge {
+            background: var(--clr-gradient);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-badge .remove-tag {
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .tag-badge .remove-tag:hover {
+            opacity: 1;
+        }
+
+        .editor-toolbar {
+            background: var(--clr-surface);
+            border: 2px solid var(--clr-border);
+            border-bottom: none;
+            border-radius: var(--radius-input) var(--radius-input) 0 0;
+            padding: 8px 12px;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .editor-toolbar button {
+            background: transparent;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            color: var(--clr-text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .editor-toolbar button:hover {
+            background: var(--clr-gradient-light);
+            color: var(--clr-primary);
+        }
+
+        .editor-area {
+            border: 2px solid var(--clr-border);
+            border-top: none;
+            border-radius: 0 0 var(--radius-input) var(--radius-input);
+            min-height: 300px;
+            padding: 16px;
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .editor-area:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+            border-color: var(--clr-primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="dashboard-sidebar" id="dashboardSidebar">
+            <div class="sidebar-brand"><i class="bi bi-globe2 me-2"></i>BlogSphere</div>
+            <div class="sidebar-section-title">Main Menu</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                <a href="create-blog.html" class="nav-link active"><i class="bi bi-plus-circle"></i> Create Blog</a>
+                <a href="my-blogs.html" class="nav-link"><i class="bi bi-journal-text"></i> My Blogs</a>
+                <a href="profile-settings.html" class="nav-link"><i class="bi bi-person-gear"></i> Profile &
+                    Settings</a>
+            </nav>
+            <div class="sidebar-section-title">Quick Links</div>
+            <nav class="sidebar-nav">
+                <a href="../../index.html" class="nav-link"><i class="bi bi-house"></i> Back to Home</a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="dashboard-content">
+            <div class="dashboard-topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-ghost d-lg-none" onclick="toggleSidebar()"><i class="bi bi-list"
+                            style="font-size:22px;"></i></button>
+                    <div class="topbar-title">
+                        <h4>Create New Blog</h4>
+                        <p>Write and publish your article</p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <button class="btn btn-ghost border" id="saveDraftBtn"><i class="bi bi-save me-1"></i> Save
+                        Draft</button>
+                    <button class="btn btn-gradient" id="publishBtn"><i class="bi bi-send me-1"></i> Publish</button>
+                </div>
+            </div>
+
+            <div class="dashboard-main">
+                <form id="createBlogForm" novalidate>
+                    <div class="row g-4">
+                        <div class="col-lg-8">
+                            <!-- Title -->
+                            <div class="card-custom p-4 mb-4 fade-in">
+                                <div class="mb-4">
+                                    <label class="form-label-custom" for="blogTitle">Blog Title</label>
+                                    <input type="text" class="form-control form-control-custom" id="blogTitle"
+                                        placeholder="Enter an engaging title for your blog..." required
+                                        style="font-size:18px; font-weight:600; padding:14px 16px;">
+                                </div>
+
+                                <!-- Editor -->
+                                <div class="mb-4">
+                                    <label class="form-label-custom">Content</label>
+                                    <div class="editor-toolbar">
+                                        <button type="button" title="Bold" onclick="document.execCommand('bold')"><i
+                                                class="bi bi-type-bold"></i></button>
+                                        <button type="button" title="Italic" onclick="document.execCommand('italic')"><i
+                                                class="bi bi-type-italic"></i></button>
+                                        <button type="button" title="Underline"
+                                            onclick="document.execCommand('underline')"><i
+                                                class="bi bi-type-underline"></i></button>
+                                        <button type="button" title="Strikethrough"
+                                            onclick="document.execCommand('strikethrough')"><i
+                                                class="bi bi-type-strikethrough"></i></button>
+                                        <span
+                                            style="width:1px; height:20px; background:var(--clr-border); margin:0 4px;"></span>
+                                        <button type="button" title="Heading 2"
+                                            onclick="document.execCommand('formatBlock', false, 'h2')"><i
+                                                class="bi bi-type-h2"></i></button>
+                                        <button type="button" title="Heading 3"
+                                            onclick="document.execCommand('formatBlock', false, 'h3')"><i
+                                                class="bi bi-type-h3"></i></button>
+                                        <button type="button" title="Paragraph"
+                                            onclick="document.execCommand('formatBlock', false, 'p')"><i
+                                                class="bi bi-text-paragraph"></i></button>
+                                        <span
+                                            style="width:1px; height:20px; background:var(--clr-border); margin:0 4px;"></span>
+                                        <button type="button" title="Unordered List"
+                                            onclick="document.execCommand('insertUnorderedList')"><i
+                                                class="bi bi-list-ul"></i></button>
+                                        <button type="button" title="Ordered List"
+                                            onclick="document.execCommand('insertOrderedList')"><i
+                                                class="bi bi-list-ol"></i></button>
+                                        <button type="button" title="Blockquote"
+                                            onclick="document.execCommand('formatBlock', false, 'blockquote')"><i
+                                                class="bi bi-blockquote-left"></i></button>
+                                        <span
+                                            style="width:1px; height:20px; background:var(--clr-border); margin:0 4px;"></span>
+                                        <button type="button" title="Link" onclick="addLink()"><i
+                                                class="bi bi-link"></i></button>
+                                        <button type="button" title="Code"
+                                            onclick="document.execCommand('formatBlock', false, 'pre')"><i
+                                                class="bi bi-code-slash"></i></button>
+                                    </div>
+                                    <div class="editor-area" contenteditable="true" id="blogContent"
+                                        placeholder="Start writing your blog content here..."></div>
+                                </div>
+
+                                <!-- Excerpt -->
+                                <div>
+                                    <label class="form-label-custom" for="blogExcerpt">Excerpt / Summary</label>
+                                    <textarea class="form-control form-control-custom" id="blogExcerpt" rows="3"
+                                        placeholder="Write a brief summary of your blog (shown in previews)..."></textarea>
+                                    <small class="text-muted-custom mt-1 d-block"><span id="excerptCount">0</span>/200
+                                        characters</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <!-- Featured Image -->
+                            <div class="card-custom p-4 mb-4 fade-in">
+                                <h6 class="mb-3"><i class="bi bi-image me-2 text-primary-custom"></i>Featured Image</h6>
+                                <div class="image-upload-area" id="imageUpload">
+                                    <i class="bi bi-cloud-arrow-up"
+                                        style="font-size:40px; color:var(--clr-text-muted);"></i>
+                                    <p class="text-muted-custom mt-2 mb-1">Drag & drop or click to upload</p>
+                                    <small class="text-muted-custom">PNG, JPG up to 5MB</small>
+                                    <input type="file" id="imageInput" accept="image/*" hidden>
+                                </div>
+                                <div id="imagePreview" class="mt-3" style="display:none;">
+                                    <img id="previewImg" src="" alt="Preview"
+                                        style="width:100%; border-radius:var(--radius-btn);">
+                                    <button type="button" class="btn btn-ghost text-danger mt-2 btn-sm"
+                                        id="removeImage"><i class="bi bi-trash me-1"></i>Remove</button>
+                                </div>
+                            </div>
+
+                            <!-- Category -->
+                            <div class="card-custom p-4 mb-4 fade-in">
+                                <h6 class="mb-3"><i class="bi bi-folder me-2 text-primary-custom"></i>Category</h6>
+                                <select class="form-select form-control-custom" id="blogCategory" required>
+                                    <option value="">Select a category</option>
+                                </select>
+                            </div>
+
+                            <!-- Tags -->
+                            <div class="card-custom p-4 mb-4 fade-in">
+                                <h6 class="mb-3"><i class="bi bi-tags me-2 text-primary-custom"></i>Tags</h6>
+                                <div class="tag-input-wrapper" id="tagWrapper">
+                                    <input type="text" placeholder="Add a tag and press Enter" id="tagInput">
+                                </div>
+                                <small class="text-muted-custom mt-2 d-block">Press Enter to add a tag</small>
+                            </div>
+
+                            <!-- SEO -->
+                            <div class="card-custom p-4 fade-in">
+                                <h6 class="mb-3"><i class="bi bi-search me-2 text-primary-custom"></i>SEO Settings</h6>
+                                <div class="mb-3">
+                                    <label class="form-label-custom text-small" for="seoTitle">SEO Title</label>
+                                    <input type="text" class="form-control form-control-custom" id="seoTitle"
+                                        placeholder="SEO optimized title">
+                                </div>
+                                <div>
+                                    <label class="form-label-custom text-small" for="seoDesc">Meta Description</label>
+                                    <textarea class="form-control form-control-custom" id="seoDesc" rows="2"
+                                        placeholder="Brief SEO description"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" style="position:fixed; top:80px; right:20px; z-index:9999; width:360px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../models/UserModel.js"></script>
+    <script src="../../models/BlogModel.js"></script>
+    <script src="../../models/CategoryModel.js"></script>
+    <script src="../../models/CommentModel.js"></script>
+    <script src="../../controllers/MainController.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Populate categories
+            const catSelect = document.getElementById('blogCategory');
+            categoryModel.getAll().forEach(c => {
+                catSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            });
+
+            // Image upload
+            const uploadArea = document.getElementById('imageUpload');
+            const imageInput = document.getElementById('imageInput');
+            uploadArea.addEventListener('click', () => imageInput.click());
+            uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragging'); });
+            uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragging'));
+            uploadArea.addEventListener('drop', (e) => { e.preventDefault(); uploadArea.classList.remove('dragging'); handleImageFile(e.dataTransfer.files[0]); });
+            imageInput.addEventListener('change', (e) => { if (e.target.files[0]) handleImageFile(e.target.files[0]); });
+
+            function handleImageFile(file) {
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('previewImg').src = e.target.result;
+                        document.getElementById('imagePreview').style.display = 'block';
+                        uploadArea.style.display = 'none';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            document.getElementById('removeImage').addEventListener('click', () => {
+                document.getElementById('imagePreview').style.display = 'none';
+                uploadArea.style.display = 'block';
+                imageInput.value = '';
+            });
+
+            // Tags
+            const tags = [];
+            const tagInput = document.getElementById('tagInput');
+            const tagWrapper = document.getElementById('tagWrapper');
+            tagInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const tag = tagInput.value.trim();
+                    if (tag && !tags.includes(tag)) {
+                        tags.push(tag);
+                        const badge = document.createElement('span');
+                        badge.className = 'tag-badge';
+                        badge.innerHTML = `${tag} <span class="remove-tag" data-tag="${tag}"><i class="bi bi-x"></i></span>`;
+                        tagWrapper.insertBefore(badge, tagInput);
+                        tagInput.value = '';
+                    }
+                }
+            });
+            tagWrapper.addEventListener('click', (e) => {
+                const removeBtn = e.target.closest('.remove-tag');
+                if (removeBtn) {
+                    const tag = removeBtn.dataset.tag;
+                    tags.splice(tags.indexOf(tag), 1);
+                    removeBtn.parentElement.remove();
+                }
+            });
+
+            // Excerpt counter
+            document.getElementById('blogExcerpt').addEventListener('input', function () {
+                document.getElementById('excerptCount').textContent = this.value.length;
+            });
+
+            // Publish
+            document.getElementById('publishBtn').addEventListener('click', () => {
+                const title = document.getElementById('blogTitle').value.trim();
+                if (!title) { showToast('Please enter a blog title', 'warning'); return; }
+                showToast('Blog published successfully! 🎉', 'success');
+                setTimeout(() => { window.location.href = 'my-blogs.html'; }, 2000);
+            });
+
+            // Save Draft
+            document.getElementById('saveDraftBtn').addEventListener('click', () => {
+                showToast('Draft saved successfully!', 'info');
+            });
+
+            // Add link helper
+            window.addLink = function () {
+                const url = prompt('Enter URL:');
+                if (url) document.execCommand('createLink', false, url);
+            };
+        });
+    </script>
+</body>
+
+</html>

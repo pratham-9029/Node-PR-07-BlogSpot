@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Browse articles by category on BlogSphere.">
+    <title>Categories — BlogSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../../assets/css/styles.css" rel="stylesheet">
+    <style>
+        .category-card {
+            text-align: center;
+            padding: 40px 24px;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .category-card .cat-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: var(--radius-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 16px;
+            transition: var(--transition);
+        }
+
+        .category-card:hover .cat-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .category-card h5 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .category-card p {
+            font-size: 13px;
+            color: var(--clr-text-secondary);
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="../../index.html"><i class="bi bi-globe2"></i> BlogSphere</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="blog-listing.html">Blogs</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="category.html">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="search-results.html">Search</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="login.html" class="btn btn-ghost">Login</a>
+                    <a href="register.html" class="btn btn-gradient">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HEADER -->
+    <section class="hero-section" style="padding:120px 0 60px;">
+        <div class="container text-center">
+            <p class="text-caption" style="color:rgba(255,255,255,0.7);"><i class="bi bi-grid me-1"></i> Browse</p>
+            <h1 class="hero-title" style="font-size:40px;">Explore Categories</h1>
+            <p class="hero-subtitle mx-auto text-center">Find the topics that interest you most</p>
+        </div>
+    </section>
+
+    <!-- CATEGORY GRID -->
+    <section class="section-padding" id="categoriesSection">
+        <div class="container">
+            <div class="row g-4" id="categoryGrid">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CATEGORY BLOGS (shown when a category is selected) -->
+    <section class="section-padding bg-surface" id="categoryBlogsSection" style="display:none;">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <div>
+                    <a href="category.html" class="text-small text-primary-custom mb-2 d-inline-block"><i
+                            class="bi bi-arrow-left me-1"></i> All Categories</a>
+                    <h2 id="selectedCategoryTitle"></h2>
+                    <p class="text-muted-custom" id="selectedCategoryDesc"></p>
+                </div>
+            </div>
+            <div class="row g-4" id="categoryBlogsGrid">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none; margin-top:0;">
+                <p>&copy; 2025 BlogSphere. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toastContainer" style="position:fixed; top:80px; right:20px; z-index:9999; width:360px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../models/UserModel.js"></script>
+    <script src="../../models/BlogModel.js"></script>
+    <script src="../../models/CategoryModel.js"></script>
+    <script src="../../models/CommentModel.js"></script>
+    <script src="../../controllers/MainController.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const categories = categoryModel.getAll();
+            const selectedId = parseInt(getUrlParam('id'));
+
+            if (selectedId) {
+                showCategoryBlogs(selectedId);
+            } else {
+                showAllCategories();
+            }
+
+            function showAllCategories() {
+                document.getElementById('categoriesSection').style.display = 'block';
+                document.getElementById('categoryBlogsSection').style.display = 'none';
+                const grid = document.getElementById('categoryGrid');
+                grid.innerHTML = categories.map(c => `
+          <div class="col-md-4 col-lg-3 fade-in">
+            <a href="category.html?id=${c.id}" class="card-custom category-card">
+              <div class="cat-icon" style="background:${c.color}15; color:${c.color};">
+                <i class="bi ${c.icon}"></i>
+              </div>
+              <h5>${c.name}</h5>
+              <p>${c.description}</p>
+              <span class="badge-custom badge-published">${c.blogCount} articles</span>
+            </a>
+          </div>
+        `).join('');
+            }
+
+            function showCategoryBlogs(catId) {
+                const cat = categoryModel.getById(catId);
+                if (!cat) { showAllCategories(); return; }
+
+                document.title = `${cat.name} — BlogSphere`;
+                document.getElementById('categoriesSection').style.display = 'none';
+                document.getElementById('categoryBlogsSection').style.display = 'block';
+                document.getElementById('selectedCategoryTitle').innerHTML = `<i class="bi ${cat.icon} me-2" style="color:${cat.color}"></i>${cat.name}`;
+                document.getElementById('selectedCategoryDesc').textContent = cat.description;
+
+                const blogs = blogModel.getByCategory(catId);
+                const grid = document.getElementById('categoryBlogsGrid');
+
+                if (blogs.length === 0) {
+                    grid.innerHTML = `
+            <div class="col-12">
+              <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <h4>No articles yet</h4>
+                <p>There are no articles in this category yet. Check back later!</p>
+              </div>
+            </div>`;
+                } else {
+                    grid.innerHTML = blogs.map(b => createBlogCard(b)).join('');
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

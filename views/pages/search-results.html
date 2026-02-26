@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Search for articles on BlogSphere.">
+    <title>Search Results — BlogSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../../assets/css/styles.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="../../index.html"><i class="bi bi-globe2"></i> BlogSphere</a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item"><a class="nav-link" href="../../index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="blog-listing.html">Blogs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="category.html">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="search-results.html">Search</a></li>
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="login.html" class="btn btn-ghost">Login</a>
+                    <a href="register.html" class="btn btn-gradient">Get Started</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- SEARCH HEADER -->
+    <section class="bg-surface" style="padding:120px 0 60px;">
+        <div class="container">
+            <div class="text-center mb-4">
+                <p class="text-caption text-primary-custom"><i class="bi bi-search me-1"></i> Search</p>
+                <h1 style="font-size:36px;">Find Articles</h1>
+                <p class="text-muted-custom">Search through our collection of articles</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="search-bar">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search articles, topics, tags..."
+                            class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-3">
+                <p class="text-small text-muted-custom">Popular:
+                    <a href="?q=JavaScript" class="tag">JavaScript</a>
+                    <a href="?q=CSS" class="tag">CSS</a>
+                    <a href="?q=Python" class="tag">Python</a>
+                    <a href="?q=DevOps" class="tag">DevOps</a>
+                    <a href="?q=Career" class="tag">Career</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="section-padding">
+        <div class="container">
+            <p class="mb-4" id="searchInfo" style="font-size:15px; color:var(--clr-text-secondary);"></p>
+            <div class="row g-4" id="searchResults">
+                <!-- Rendered by JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none; margin-top:0;">
+                <p>&copy; 2025 BlogSphere. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="toastContainer" style="position:fixed; top:80px; right:20px; z-index:9999; width:360px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../models/UserModel.js"></script>
+    <script src="../../models/BlogModel.js"></script>
+    <script src="../../models/CategoryModel.js"></script>
+    <script src="../../models/CommentModel.js"></script>
+    <script src="../../controllers/MainController.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.getElementById('searchInput');
+            const query = getUrlParam('q') || '';
+
+            if (query) {
+                searchInput.value = query;
+                performSearch(query);
+            } else {
+                showRecentPosts();
+            }
+
+            searchInput.addEventListener('input', (e) => {
+                const q = e.target.value.trim();
+                if (q.length > 0) {
+                    performSearch(q);
+                } else {
+                    showRecentPosts();
+                }
+            });
+
+            function performSearch(q) {
+                const results = blogModel.search(q);
+                const container = document.getElementById('searchResults');
+                const info = document.getElementById('searchInfo');
+
+                info.innerHTML = `Found <strong>${results.length}</strong> result${results.length !== 1 ? 's' : ''} for "<strong>${q}</strong>"`;
+
+                if (results.length === 0) {
+                    container.innerHTML = `
+            <div class="col-12">
+              <div class="empty-state">
+                <i class="bi bi-search"></i>
+                <h4>No results found</h4>
+                <p>Try different keywords or browse by category</p>
+                <a href="blog-listing.html" class="btn btn-gradient">Browse All</a>
+              </div>
+            </div>`;
+                } else {
+                    container.innerHTML = results.map(b => createBlogCard(b)).join('');
+                }
+            }
+
+            function showRecentPosts() {
+                const recent = blogModel.getRecent(6);
+                document.getElementById('searchInfo').innerHTML = 'Showing recent articles — start typing to search';
+                document.getElementById('searchResults').innerHTML = recent.map(b => createBlogCard(b)).join('');
+            }
+        });
+    </script>
+</body>
+
+</html>

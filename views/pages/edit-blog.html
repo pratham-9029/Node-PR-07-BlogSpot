@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Edit your blog post on BlogSphere.">
+    <title>Edit Blog — BlogSphere</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../../assets/css/styles.css" rel="stylesheet">
+    <style>
+        .image-upload-area {
+            border: 2px dashed var(--clr-border);
+            border-radius: var(--radius-card);
+            padding: 48px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: var(--clr-surface);
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--clr-primary);
+        }
+
+        .tag-input-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 8px;
+            border: 2px solid var(--clr-border);
+            border-radius: var(--radius-input);
+            background: var(--clr-card);
+            min-height: 48px;
+            align-items: center;
+        }
+
+        .tag-input-wrapper:focus-within {
+            border-color: var(--clr-primary);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+        }
+
+        .tag-input-wrapper input {
+            border: none;
+            outline: none;
+            flex: 1;
+            min-width: 120px;
+            font-size: 15px;
+        }
+
+        .tag-badge {
+            background: var(--clr-gradient);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-badge .remove-tag {
+            cursor: pointer;
+            opacity: 0.7;
+        }
+
+        .tag-badge .remove-tag:hover {
+            opacity: 1;
+        }
+
+        .editor-toolbar {
+            background: var(--clr-surface);
+            border: 2px solid var(--clr-border);
+            border-bottom: none;
+            border-radius: var(--radius-input) var(--radius-input) 0 0;
+            padding: 8px 12px;
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .editor-toolbar button {
+            background: transparent;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            color: var(--clr-text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .editor-toolbar button:hover {
+            background: var(--clr-gradient-light);
+            color: var(--clr-primary);
+        }
+
+        .editor-area {
+            border: 2px solid var(--clr-border);
+            border-top: none;
+            border-radius: 0 0 var(--radius-input) var(--radius-input);
+            min-height: 300px;
+            padding: 16px;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .editor-area:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.12);
+            border-color: var(--clr-primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="dashboard-wrapper">
+        <!-- SIDEBAR -->
+        <aside class="dashboard-sidebar">
+            <div class="sidebar-brand"><i class="bi bi-globe2 me-2"></i>BlogSphere</div>
+            <div class="sidebar-section-title">Main Menu</div>
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-link"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                <a href="create-blog.html" class="nav-link"><i class="bi bi-plus-circle"></i> Create Blog</a>
+                <a href="my-blogs.html" class="nav-link"><i class="bi bi-journal-text"></i> My Blogs</a>
+                <a href="profile-settings.html" class="nav-link"><i class="bi bi-person-gear"></i> Profile &
+                    Settings</a>
+            </nav>
+            <div class="sidebar-section-title">Quick Links</div>
+            <nav class="sidebar-nav">
+                <a href="../../index.html" class="nav-link"><i class="bi bi-house"></i> Back to Home</a>
+            </nav>
+        </aside>
+
+        <!-- MAIN -->
+        <div class="dashboard-content">
+            <div class="dashboard-topbar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="btn btn-ghost d-lg-none" onclick="toggleSidebar()"><i class="bi bi-list"
+                            style="font-size:22px;"></i></button>
+                    <div class="topbar-title">
+                        <h4>Edit Blog</h4>
+                        <p id="editSubtitle">Update your article</p>
+                    </div>
+                </div>
+                <div class="topbar-actions">
+                    <button class="btn btn-ghost border" id="saveDraftBtn"><i class="bi bi-save me-1"></i> Save</button>
+                    <button class="btn btn-gradient" id="updateBtn"><i class="bi bi-check-lg me-1"></i> Update</button>
+                </div>
+            </div>
+
+            <div class="dashboard-main">
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <div class="card-custom p-4 fade-in">
+                            <div class="mb-4">
+                                <label class="form-label-custom" for="blogTitle">Blog Title</label>
+                                <input type="text" class="form-control form-control-custom" id="blogTitle"
+                                    style="font-size:18px; font-weight:600; padding:14px 16px;">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label-custom">Content</label>
+                                <div class="editor-toolbar">
+                                    <button type="button" onclick="document.execCommand('bold')"><i
+                                            class="bi bi-type-bold"></i></button>
+                                    <button type="button" onclick="document.execCommand('italic')"><i
+                                            class="bi bi-type-italic"></i></button>
+                                    <button type="button" onclick="document.execCommand('underline')"><i
+                                            class="bi bi-type-underline"></i></button>
+                                    <span
+                                        style="width:1px; height:20px; background:var(--clr-border); margin:0 4px;"></span>
+                                    <button type="button" onclick="document.execCommand('formatBlock', false, 'h2')"><i
+                                            class="bi bi-type-h2"></i></button>
+                                    <button type="button" onclick="document.execCommand('formatBlock', false, 'h3')"><i
+                                            class="bi bi-type-h3"></i></button>
+                                    <button type="button" onclick="document.execCommand('insertUnorderedList')"><i
+                                            class="bi bi-list-ul"></i></button>
+                                    <button type="button" onclick="document.execCommand('insertOrderedList')"><i
+                                            class="bi bi-list-ol"></i></button>
+                                    <button type="button"
+                                        onclick="document.execCommand('formatBlock', false, 'blockquote')"><i
+                                            class="bi bi-blockquote-left"></i></button>
+                                </div>
+                                <div class="editor-area" contenteditable="true" id="blogContent"></div>
+                            </div>
+                            <div>
+                                <label class="form-label-custom" for="blogExcerpt">Excerpt</label>
+                                <textarea class="form-control form-control-custom" id="blogExcerpt" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <!-- Image -->
+                        <div class="card-custom p-4 mb-4 fade-in">
+                            <h6 class="mb-3"><i class="bi bi-image me-2 text-primary-custom"></i>Featured Image</h6>
+                            <div id="currentImage"></div>
+                            <div class="image-upload-area mt-3" id="imageUpload" style="padding:24px;">
+                                <i class="bi bi-cloud-arrow-up"
+                                    style="font-size:28px; color:var(--clr-text-muted);"></i>
+                                <p class="text-muted-custom text-small mt-1 mb-0">Upload new image</p>
+                                <input type="file" id="imageInput" accept="image/*" hidden>
+                            </div>
+                        </div>
+                        <!-- Category -->
+                        <div class="card-custom p-4 mb-4 fade-in">
+                            <h6 class="mb-3"><i class="bi bi-folder me-2 text-primary-custom"></i>Category</h6>
+                            <select class="form-select form-control-custom" id="blogCategory"></select>
+                        </div>
+                        <!-- Tags -->
+                        <div class="card-custom p-4 mb-4 fade-in">
+                            <h6 class="mb-3"><i class="bi bi-tags me-2 text-primary-custom"></i>Tags</h6>
+                            <div class="tag-input-wrapper" id="tagWrapper">
+                                <input type="text" placeholder="Add tag + Enter" id="tagInput">
+                            </div>
+                        </div>
+                        <!-- Status -->
+                        <div class="card-custom p-4 fade-in">
+                            <h6 class="mb-3"><i class="bi bi-flag me-2 text-primary-custom"></i>Status</h6>
+                            <select class="form-select form-control-custom" id="blogStatus">
+                                <option value="draft">Draft</option>
+                                <option value="published">Published</option>
+                                <option value="pending">Pending Review</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" style="position:fixed; top:80px; right:20px; z-index:9999; width:360px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../models/UserModel.js"></script>
+    <script src="../../models/BlogModel.js"></script>
+    <script src="../../models/CategoryModel.js"></script>
+    <script src="../../models/CommentModel.js"></script>
+    <script src="../../controllers/MainController.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const blogId = parseInt(getUrlParam('id')) || 1;
+            const blog = blogModel.getById(blogId);
+
+            if (!blog) {
+                document.querySelector('.dashboard-main').innerHTML = `<div class="empty-state"><i class="bi bi-file-earmark-x"></i><h4>Blog not found</h4><a href="my-blogs.html" class="btn btn-gradient">Back to My Blogs</a></div>`;
+                return;
+            }
+
+            // Populate form
+            document.getElementById('blogTitle').value = blog.title;
+            document.getElementById('blogContent').innerHTML = blog.content;
+            document.getElementById('blogExcerpt').value = blog.excerpt;
+            document.getElementById('editSubtitle').textContent = `Editing: ${truncate(blog.title, 40)}`;
+            document.getElementById('currentImage').innerHTML = `<img src="${blog.image}" style="width:100%; border-radius:var(--radius-btn);" alt="Current image">`;
+
+            // Categories
+            const catSelect = document.getElementById('blogCategory');
+            categoryModel.getAll().forEach(c => {
+                catSelect.innerHTML += `<option value="${c.id}" ${c.id === blog.categoryId ? 'selected' : ''}>${c.name}</option>`;
+            });
+
+            // Status
+            document.getElementById('blogStatus').value = blog.status;
+
+            // Tags
+            const tags = [...blog.tags];
+            const tagWrapper = document.getElementById('tagWrapper');
+            const tagInput = document.getElementById('tagInput');
+            tags.forEach(t => addTagBadge(t));
+
+            tagInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const tag = tagInput.value.trim();
+                    if (tag && !tags.includes(tag)) { tags.push(tag); addTagBadge(tag); tagInput.value = ''; }
+                }
+            });
+
+            function addTagBadge(tag) {
+                const badge = document.createElement('span');
+                badge.className = 'tag-badge';
+                badge.innerHTML = `${tag} <span class="remove-tag" data-tag="${tag}"><i class="bi bi-x"></i></span>`;
+                tagWrapper.insertBefore(badge, tagInput);
+            }
+
+            tagWrapper.addEventListener('click', (e) => {
+                const rm = e.target.closest('.remove-tag');
+                if (rm) { tags.splice(tags.indexOf(rm.dataset.tag), 1); rm.parentElement.remove(); }
+            });
+
+            // Image upload
+            document.getElementById('imageUpload').addEventListener('click', () => document.getElementById('imageInput').click());
+            document.getElementById('imageInput').addEventListener('change', (e) => {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => { document.getElementById('currentImage').innerHTML = `<img src="${ev.target.result}" style="width:100%; border-radius:var(--radius-btn);">`; };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+
+            // Actions
+            document.getElementById('updateBtn').addEventListener('click', () => {
+                showToast('Blog updated successfully! 🎉', 'success');
+                setTimeout(() => { window.location.href = 'my-blogs.html'; }, 2000);
+            });
+            document.getElementById('saveDraftBtn').addEventListener('click', () => showToast('Changes saved!', 'info'));
+        });
+    </script>
+</body>
+
+</html>
